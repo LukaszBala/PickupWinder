@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include <i2c/LiquidCrystal_I2C.h>
 #include <Wire.h>
+#include "Config.h"
 #include "Menu.h"
 
 using namespace std;  
-
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
@@ -15,6 +15,7 @@ int hall = 0;
 int oldHall = 0;
 int counter = 0;
 bool updateScreen = false;
+int encoderCounter = 0;
 
 int Previous_Output;
 int btnPressed = 0;
@@ -54,10 +55,12 @@ void loop() {
     menu->printMenu();
     updateScreen = false;
   }
-
-  if(menu->checkBtn() == 1){
-    menu->printMenu();
+  btnPressed = digitalRead(BTN);
+  if(btnPressed == 0 && btnPressed != previousBtn){
+    menu->onBtnClick();
+    updateScreen = true;
   }
+  previousBtn = btnPressed;
 
   // if (digitalRead(DT) != Previous_Output)
   //  {
@@ -176,6 +179,17 @@ void initWinder(){
   attachInterrupt(digitalPinToInterrupt(CLK), isr, LOW);
 
   Previous_Output = digitalRead(DT);
+
+  speed = 0;
+  speedStr = "";
+  oldSpeed = 0;
+  hall = 0;
+  oldHall = 0;
+  counter = 0;
+  // Previous_Output = 0;
+  encoderCounter = 0;
+  btnPressed = 0;
+  previousBtn = 0;
 
   digitalWrite(greenLed, HIGH);
   digitalWrite(redLed, HIGH);

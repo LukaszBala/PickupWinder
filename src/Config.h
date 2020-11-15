@@ -11,5 +11,3 @@
 #define CLK 3
 #define DT 4
 #define BTN 5
-
-int encoderCounter = 0;
