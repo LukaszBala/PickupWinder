@@ -3,20 +3,6 @@
 #include <Wire.h>
 #include "Menu.h"
 
-#define hallPin 2
-
-#define redLed 3
-#define backBtn 4
-#define greenLed 5
-
-#define enA 6
-#define in1 7
-#define in2 8
-
-#define BTN 10
-#define DT 11
-#define CLK 12
-
 using namespace std;  
 
 
@@ -28,14 +14,16 @@ int oldSpeed = 0;
 int hall = 0;
 int oldHall = 0;
 int counter = 0;
+bool updateScreen = false;
 
 int Previous_Output;
-int Encoder_Count = 0;
 int btnPressed = 0;
 int previousBtn = 0;
 Menu* menu;
 
 void reset();
+void isr();
+void initWinder();
 
 void setup() {
   pinMode(enA, OUTPUT);
@@ -52,54 +40,47 @@ void setup() {
   pinMode(redLed, OUTPUT);
   pinMode(backBtn, INPUT);
 
-  digitalWrite(greenLed, HIGH);
-  digitalWrite(redLed, HIGH);
-
-  // Set initial rotation direction
-  digitalWrite(in1, HIGH);
-  digitalWrite(in2, LOW);
-
-  menu = new Menu(&lcd);
-
-  
-  Previous_Output = digitalRead(DT);
-  lcd.print(Previous_Output);
-  
-  
+  initWinder();
 }
+
 void loop() {
   if(digitalRead(backBtn) == 1)
     reset();
 
-  if (digitalRead(DT) != Previous_Output)
-   {
-     if (digitalRead(CLK) != Previous_Output)
-     {
-       Encoder_Count ++;
-       menu->opt = Encoder_Count;
-       menu->printMenu();
-     }
-      else
-     {
-       Encoder_Count--;
-       menu->opt = Encoder_Count;
-       menu->printMenu();
-     }
-   }
+  if(updateScreen)
+  {
+    menu->setOpt(encoderCounter);
+    encoderCounter = menu->getOpt();
+    menu->printMenu();
+    updateScreen = false;
+  }
 
-   Previous_Output = digitalRead(DT);
+  if(menu->checkBtn() == 1){
+    menu->printMenu();
+  }
 
-  //  btnPressed = digitalRead(BTN);
-
-  //  if (btnPressed == 0)
+  // if (digitalRead(DT) != Previous_Output)
   //  {
-  //    lcd.clear(); 
-  //    lcd.setCursor(0, 1); 
-  //    lcd.print("Switch pressed");
+  //    if (digitalRead(CLK) != Previous_Output)
+  //    {
+  //      encoderCounter++;
+  //      menu->setOpt(encoderCounter);
+  //      encoderCounter = menu->getOpt();
+  //      menu->printMenu();
+  //    }
+  //     else
+  //    {
+  //      encoderCounter--;
+  //      menu->setOpt(encoderCounter);
+  //      encoderCounter = menu->getOpt();
+  //      menu->printMenu();
+  //    }
   //  }
 
+  //  Previous_Output = digitalRead(DT);
+
   
-  speed = 150;//Odczytanie wartości z ADC   
+  // speed = 150;//Odczytanie wartości z ADC   
   // hall = digitalRead(hallPin);
   // // speed = map(speed, 0, 1023, 60, 255);//Przeskalowanie wartości
   
@@ -119,16 +100,83 @@ void loop() {
 }
 
 void reset(){
+
+  digitalWrite(greenLed, LOW);
+  digitalWrite(redLed, LOW);
+
+  for(int i = 0; i < 3; i++){
+    digitalWrite(greenLed, HIGH);
+    digitalWrite(redLed, HIGH);
+    
+    delay(100);
+
+    digitalWrite(greenLed, LOW);
+    digitalWrite(redLed, LOW);
+
+    if(i < 2)
+      delay(100);
+  }
+
   menu->setup();
+
   speed = 0;
   speedStr = "";
   oldSpeed = 0;
   hall = 0;
   oldHall = 0;
   counter = 0;
-
   // Previous_Output = 0;
-  Encoder_Count = 0;
+  encoderCounter = 0;
   btnPressed = 0;
   previousBtn = 0;
+
+  digitalWrite(greenLed, HIGH);
+  digitalWrite(redLed, HIGH);
+}
+
+void isr(){
+  static unsigned long lastInterruptTime = 0;
+  unsigned long interruptTime = millis();
+
+  if (interruptTime - lastInterruptTime > 5) {
+    if (digitalRead(DT) == LOW)
+    {
+      encoderCounter-- ;
+    }
+    else {
+      encoderCounter++ ;
+    }
+
+    updateScreen = true;
+  }
+  lastInterruptTime = interruptTime;
+}
+
+void initWinder(){
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  for( int i = 0; i < 3; i++){
+    digitalWrite(greenLed, HIGH);
+    digitalWrite(redLed, HIGH);
+
+    if(i == 0)
+      delay(500);
+    else
+      delay(250);
+
+    digitalWrite(greenLed, LOW);
+    digitalWrite(redLed, LOW);
+
+    if(i < 2)
+      delay(250);
+  }
+
+  menu = new Menu(&lcd);
+  attachInterrupt(digitalPinToInterrupt(CLK), isr, LOW);
+
+  Previous_Output = digitalRead(DT);
+
+  digitalWrite(greenLed, HIGH);
+  digitalWrite(redLed, HIGH);
 }
