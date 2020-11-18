@@ -1,20 +1,18 @@
 #include "Menu.h"
 
-
-
 Menu::Menu(LiquidCrystal_I2C* lcdIn)
 {
     lcd = lcdIn;
     setup();
 }
 
-Menu::~Menu()
-{
+Menu::Menu(){
+    this->lcd = new LiquidCrystal_I2C(0x27, 16, 2);
+    setup();
 }
 
-void Menu::test(IOption option){
-    lcd->clear();
-    lcd->print(option.maxLvl);
+Menu::~Menu()
+{
 }
 
 void Menu::setOpt(int value)
@@ -49,16 +47,22 @@ void Menu::setup() {
     lcd->print("Choose Option");
 }
 
+void Menu::printRun(int counter){
+    lcd->clear();
+    lcd->setCursor(0,1);
+    lcd->print(counter);
+}
+
 void Menu::printMenu() {
     switch (menuLvl){
         case 0:
             chooseOption();
             break;
         case 1:
+            // Run run = new Run(this);
+            // run->run();
             break;
         default:
-            // FreeRoam roam;
-            // test(roam);
             break;
     }
 }

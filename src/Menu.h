@@ -1,7 +1,5 @@
 #include <i2c/LiquidCrystal_I2C.h>
 #include <Arduino.h>
-#include "Config.h"
-#include "IOption.cpp"
 
 class Menu
 {
@@ -11,7 +9,6 @@ private:
     int menuLvl;
     int choosenOpt;
     void chooseOption();
-    void test(IOption option);
 public:
     Menu();
     Menu(LiquidCrystal_I2C* lcd);
@@ -24,5 +21,6 @@ public:
 
     void printMenu();
     void setup();
+    void printRun(int counter);
 };
 
