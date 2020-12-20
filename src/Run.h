@@ -7,16 +7,14 @@ class Run {
     public:
         Run();
         void printMenu();
-        void windCoils();
+        void windCoils(int maxRounds = -1, int speed = 100);
+        void autoStop();
         void interruptLaunch();
+        void runOption();
     private: 
-        int prevOut;
-        int maxRounds;
         int counter;
-        int speed;
         int hall;
         int oldHall;
-        int oldSpeed;
         unsigned long buttonPressed;
         Menu* menu;
         int btnPressed;

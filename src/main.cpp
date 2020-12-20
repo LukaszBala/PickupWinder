@@ -4,8 +4,6 @@
 #include "Run.h"
 
 using namespace std;  
-// bool updateScreen;
-// int encoderCounter = 0;
 Run* runner;
 
 void isr();
@@ -13,6 +11,7 @@ void initWinder();
 void(* resetFunc) (void) = 0;
 
 void setup() {
+  TCCR1B = TCCR1B & B11111000 | B00000001;
   pinMode(enA, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
@@ -36,8 +35,6 @@ void loop() {
 
 }
 
-
-
 void initWinder(){
   digitalWrite(in1, HIGH);
   digitalWrite(in2, LOW);
@@ -57,12 +54,9 @@ void initWinder(){
     if(i < 2)
       delay(250);
   }
-  // updateScreen = false;
-  // encoderCounter = 0;
 
   runner = new Run();
 
-  // attachInterrupt(digitalPinToInterrupt(CLK), isr, LOW);
   attachInterrupt(digitalPinToInterrupt(backBtn), resetFunc, HIGH);
 
   digitalWrite(greenLed, HIGH);

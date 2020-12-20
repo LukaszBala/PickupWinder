@@ -30,15 +30,18 @@ int Menu::getOpt()
     return opt;
 }
 
-void Menu::onBtnClick(){
-    choosenOpt = opt;
+int Menu::getLvl(){
+    return menuLvl;
+}
 
+void Menu::onBtnClick(){
+    choosen.push_back(opt);
+    menuLvl = choosen.size();
 }
 
 void Menu::setup() {
     opt = 0;
     menuLvl = 0;
-    choosenOpt = 0;
     lcd->begin();  
     lcd->backlight();
     lcd->setCursor(0,0);
@@ -47,10 +50,19 @@ void Menu::setup() {
     lcd->print("Choose Option");
 }
 
-void Menu::printRun(int counter){
+void Menu::printAuto(int rounds){
     lcd->clear();
+    String roundsStr = String(rounds);
+    lcd->print("Rounds: " + roundsStr);
+}
+
+void Menu::printRun(int speed, int counter){
+    lcd->clear();
+    String strSpeed = String(speed);
+    String strCount = String(counter);
+    lcd->print("Speed: " + strSpeed +"%");
     lcd->setCursor(0,1);
-    lcd->print(counter);
+    lcd->print("Winds: " + strCount);
 }
 
 void Menu::printMenu() {
@@ -59,10 +71,10 @@ void Menu::printMenu() {
             chooseOption();
             break;
         case 1:
-            // Run run = new Run(this);
-            // run->run();
+            chooseOption();
             break;
         default:
+            chooseOption();
             break;
     }
 }

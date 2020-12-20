@@ -1,5 +1,6 @@
 #include <i2c/LiquidCrystal_I2C.h>
 #include <Arduino.h>
+#include <vector.h>
 
 class Menu
 {
@@ -8,6 +9,7 @@ private:
     int opt;
     int menuLvl;
     int choosenOpt;
+    Vector <int> choosen;
     void chooseOption();
 public:
     Menu();
@@ -16,11 +18,13 @@ public:
 
     void setOpt(int value);
     int getOpt();
+    int getLvl();
 
     void onBtnClick();
 
     void printMenu();
     void setup();
-    void printRun(int counter);
+    void printRun(int speed, int counter);
+    void printAuto(int rounds);
 };
 

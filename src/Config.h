@@ -4,7 +4,7 @@
 #define DT 4
 #define BTN 5
 
-#define enA 6
+#define enA 10
 #define in1 7
 #define in2 8
 
