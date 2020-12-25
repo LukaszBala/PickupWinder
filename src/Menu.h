@@ -27,5 +27,7 @@ public:
     void printRun(int speed, int counter, int direction);
     void printDirection(int direction);
     void printAuto(int rounds);
+    void printResistance(double res);
+    void printMaterial(String mat, String res);
 };
 

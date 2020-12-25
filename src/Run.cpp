@@ -5,6 +5,24 @@ Run *pointerToClass;
 bool updateScreen = false;
 int encoderCounter = 0;
 
+String materials[] {
+    "Copper",
+    "Silver",
+    "Gold",
+    "Aluminium",
+    "Wolfram",
+    "Nikiel"
+};
+
+double materialsValues[] {
+    1.68E-8,
+    1.59E-8,
+    2.44E-8,
+    2.65E-8,
+    5.60E-8,
+    6.99E-8
+};
+
 
 static void outsideInterruptHandler(void) { 
   pointerToClass->interruptLaunch();
@@ -49,12 +67,21 @@ void Run::runOption(){
         autoStop();
         break; 
     case 3:
+        targetResistance();
         break;
     default:
         break;
     }
     encoderCounter = 0;
     menu->setOpt(encoderCounter);
+}
+
+void Run::targetResistance(){
+    for(unsigned int i = 0; i < sizeof(materialsValues)/sizeof(*materialsValues); i++) {
+        String resistance = sciNotation(materialsValues[i]);
+        menu->printMaterial(materials[i], resistance);
+        delay(1000);
+    }
 }
 
 void Run::autoStop(){
@@ -176,6 +203,19 @@ void Run::windCoils(int maxRounds, int speed) {
         maxRounds = 0;
         analogWrite(enA,0);
         attachInterrupt(digitalPinToInterrupt(CLK), outsideInterruptHandler, LOW);
+}
+
+String Run::sciNotation(double num){
+    int zeros = 0;
+    double helper = num;
+    while((int) helper == 0){
+        helper *= 10;
+        zeros++;
+    }
+    String res = String(helper);
+    res.concat("E-");
+    res.concat(zeros);
+    return res;
 }
 
 void Run::interruptLaunch(){

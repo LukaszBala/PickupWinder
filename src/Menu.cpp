@@ -50,6 +50,18 @@ void Menu::setup() {
     lcd->print("Choose Option");
 }
 
+void Menu::printResistance(double res){
+    lcd->clear();
+    lcd->print("Resistance: " + String(res));
+}
+
+void Menu::printMaterial(String mat, String res){
+    lcd->clear();
+    lcd->print("Mat: " + mat);
+    lcd->setCursor(0,1);
+    lcd->print("Res: " + res);
+}
+
 void Menu::printDirection(int direction){
     lcd->clear();
     if(direction == 1) {
