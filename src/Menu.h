@@ -24,7 +24,8 @@ public:
 
     void printMenu();
     void setup();
-    void printRun(int speed, int counter);
+    void printRun(int speed, int counter, int direction);
+    void printDirection(int direction);
     void printAuto(int rounds);
 };
 

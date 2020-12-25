@@ -36,7 +36,7 @@ void loop() {
 }
 
 void initWinder(){
-  digitalWrite(in1, HIGH);
+  digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
 
   for( int i = 0; i < 3; i++){

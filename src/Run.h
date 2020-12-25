@@ -12,6 +12,7 @@ class Run {
         void interruptLaunch();
         void runOption();
     private: 
+        void setDirection(int direction);
         int counter;
         int hall;
         int oldHall;

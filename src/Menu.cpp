@@ -50,17 +50,33 @@ void Menu::setup() {
     lcd->print("Choose Option");
 }
 
+void Menu::printDirection(int direction){
+    lcd->clear();
+    if(direction == 1) {
+        lcd->print("Direction: ->");
+    } else
+    {
+        lcd->print("Direction: <-");
+    }
+    
+}
+
 void Menu::printAuto(int rounds){
     lcd->clear();
     String roundsStr = String(rounds);
     lcd->print("Rounds: " + roundsStr);
 }
 
-void Menu::printRun(int speed, int counter){
+void Menu::printRun(int speed, int counter, int direction){
     lcd->clear();
     String strSpeed = String(speed);
     String strCount = String(counter);
     lcd->print("Speed: " + strSpeed +"%");
+    lcd->setCursor(13,0);
+    if(direction)
+        lcd->print("->");
+    else
+        lcd->print("<-");
     lcd->setCursor(0,1);
     lcd->print("Winds: " + strCount);
 }

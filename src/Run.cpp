@@ -5,6 +5,7 @@ Run *pointerToClass;
 bool updateScreen = false;
 int encoderCounter = 0;
 
+
 static void outsideInterruptHandler(void) { 
   pointerToClass->interruptLaunch();
 }
@@ -74,13 +75,37 @@ void Run::autoStop(){
     windCoils(maxRounds, 200);
 }
 
+void Run::setDirection(int direction){
+    if(direction) {
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, LOW);
+    } else {
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, HIGH);
+    }
+}
+
 void Run::windCoils(int maxRounds, int speed) {
+    int direction = 1;
+    encoderCounter = 0;
+    menu->printDirection(direction);
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            direction = !direction;
+            menu->printDirection(direction);
+            updateScreen = false;
+        }
+    }
+    setDirection(direction);
+    encoderCounter = 0;
+    menu->onBtnClick();
     detachInterrupt(digitalPinToInterrupt(CLK));
     // long readTime;
     // long lastReadTime = 0;
     int prevOut = 0;
     int oldSpeed = 0;
-    menu->printRun(map(speed, 100, 255, 0, 100), 0);
+    menu->printRun(map(speed, 100, 255, 0, 100), 0, direction);
     while(maxRounds == -1 || counter < maxRounds)
         {
             if (digitalRead(DT) != prevOut)
@@ -131,7 +156,7 @@ void Run::windCoils(int maxRounds, int speed) {
             if((oldSpeed != speedTemp) || (hall != oldHall && hall == 0)) {
                 if(hall != oldHall && hall == 0)
                     counter++;
-                menu->printRun(speedTemp, counter);
+                menu->printRun(speedTemp, counter, direction);
             }
             oldHall = hall;
             oldSpeed = speedTemp;
