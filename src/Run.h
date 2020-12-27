@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "Config.h"
 #include "Menu.h"
+#include "Material.h"
 
 
 class Run {
@@ -15,6 +16,7 @@ class Run {
     private: 
         void setDirection(int direction);
         String sciNotation(double num);
+        Material *materials;
         int counter;
         int hall;
         int oldHall;

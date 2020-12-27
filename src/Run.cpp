@@ -5,25 +5,6 @@ Run *pointerToClass;
 bool updateScreen = false;
 int encoderCounter = 0;
 
-String materials[] {
-    "Copper",
-    "Silver",
-    "Gold",
-    "Aluminium",
-    "Wolfram",
-    "Nikiel"
-};
-
-double materialsValues[] {
-    1.68E-8,
-    1.59E-8,
-    2.44E-8,
-    2.65E-8,
-    5.60E-8,
-    6.99E-8
-};
-
-
 static void outsideInterruptHandler(void) { 
   pointerToClass->interruptLaunch();
 }
@@ -36,6 +17,14 @@ Run::Run(){
     previousBtn = 0;
     pointerToClass = this;
     attachInterrupt(digitalPinToInterrupt(CLK), outsideInterruptHandler, LOW);
+    materials = new Material[6] {
+        Material("Copper", 1.68E-8),
+        Material("Silver", 1.59E-8),
+        Material("Gold", 2.44E-8),
+        Material("Aluminium", 2.65E-8),
+        Material("Wolfram", 5.60E-8),
+        Material("Nikiel", 6.99E-8),
+         };
 }
 
 void Run::printMenu(){
@@ -77,11 +66,95 @@ void Run::runOption(){
 }
 
 void Run::targetResistance(){
-    for(unsigned int i = 0; i < sizeof(materialsValues)/sizeof(*materialsValues); i++) {
-        String resistance = sciNotation(materialsValues[i]);
-        menu->printMaterial(materials[i], resistance);
-        delay(1000);
+    encoderCounter = 0;
+    int intPart = 0;
+    int dotPart = 0 ;
+    int materialIndex = 0;
+    int materialSize = sizeof(*materials)/sizeof(materials);
+    double resistance = 0;
+    double diameter = 0;
+    double perimeter = 0;
+    double length = 0;
+    int coils = 0;
+    menu->printResistance(0);
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 0;
+            if(encoderCounter > 99)
+                encoderCounter = 99;
+            intPart = encoderCounter;
+            menu->printResistance(double(intPart), 1);
+            updateScreen = false;
+        }
     }
+    encoderCounter = 0;
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 0;
+            if(encoderCounter > 99)
+                encoderCounter = 99;
+            dotPart = encoderCounter;
+            resistance = double((double)intPart + (double)dotPart/100);
+            menu->printResistance(resistance, 1);
+            updateScreen = false;
+        }
+    }
+    encoderCounter = 0;
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 0;
+            if(encoderCounter > materialSize)
+                encoderCounter = 0;
+            materialIndex = encoderCounter;
+            String materialResistance = sciNotation(materials[materialIndex].value);
+            menu->printMaterial(materials[materialIndex].name, materialResistance);
+            updateScreen = false;
+        }
+    }
+    encoderCounter = 0;
+    menu->printResistance(diameter, 0, "Wire Diameter");
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 1000;
+            if(encoderCounter > 1001)
+                encoderCounter = 0;
+            dotPart = encoderCounter;
+            diameter = double((double)dotPart/100);
+            menu->printResistance(diameter, 1, "Wire Diameter");
+            updateScreen = false;
+        }
+    }
+    encoderCounter = 0;
+    menu->printResistance(diameter, 0, "Coil Perimeter");
+    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 1000;
+            if(encoderCounter > 1001)
+                encoderCounter = 0;
+            dotPart = encoderCounter;
+            perimeter = double((double)dotPart/100);
+            menu->printResistance(perimeter, 1, "Coil Perimeter");
+            updateScreen = false;
+        }
+    }
+
+    length = (resistance*1000*PI*(diameter/100*diameter/100))/(4*materials[materialIndex].value);
+    coils = length / perimeter;
+    while(digitalRead(BTN) == previousBtn){}
+    menu->printCoils(coils, length/100);
+    while(digitalRead(BTN) != 0){}
+
+    windCoils(coils, 60);
 }
 
 void Run::autoStop(){

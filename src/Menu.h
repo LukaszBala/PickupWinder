@@ -27,7 +27,8 @@ public:
     void printRun(int speed, int counter, int direction);
     void printDirection(int direction);
     void printAuto(int rounds);
-    void printResistance(double res);
+    void printResistance(double res, int reset = 0, String text="Resistance");
     void printMaterial(String mat, String res);
+    void printCoils(int coils, double length);
 };
 

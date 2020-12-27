@@ -50,9 +50,23 @@ void Menu::setup() {
     lcd->print("Choose Option");
 }
 
-void Menu::printResistance(double res){
+void Menu::printResistance(double res, int reset, String text){
+    if(!reset) {
+        lcd->clear();
+        lcd->print(text + ":");
+    }
+    lcd->setCursor(0,1);
+    if(res < 10)
+        lcd->print("       " + String(res) + " ");
+    else
+        lcd->print("      " + String(res) + " ");
+}
+
+void Menu::printCoils(int coils, double length){
     lcd->clear();
-    lcd->print("Resistance: " + String(res));
+    lcd->print("Length: " + String(length) + "m");
+    lcd->setCursor(0,1);
+    lcd->print("Coils: " + String(coils));
 }
 
 void Menu::printMaterial(String mat, String res){
