@@ -52,8 +52,8 @@ void Menu::setup() {
 
 void Menu::printResistance(double res, int reset, String text){
     if(!reset) {
-        lcd->clear();
-        lcd->print(text + ":");
+        lcd->setCursor(0,0);
+        lcd->print(text + ":          ");
     }
     lcd->setCursor(0,1);
     if(res < 10)
@@ -62,22 +62,26 @@ void Menu::printResistance(double res, int reset, String text){
         lcd->print("      " + String(res) + " ");
 }
 
-void Menu::printCoils(int coils, double length){
+void Menu::clear(){
     lcd->clear();
-    lcd->print("Length: " + String(length) + "m");
+}
+
+void Menu::printCoils(int coils, double length){
+    lcd->setCursor(0,0);
+    lcd->print("Length: " + String(length) + "m         ");
     lcd->setCursor(0,1);
-    lcd->print("Coils: " + String(coils));
+    lcd->print("Coils: " + String(coils) + "      ");
 }
 
 void Menu::printMaterial(String mat, String res){
-    lcd->clear();
-    lcd->print("Mat: " + mat);
+    lcd->setCursor(0,0);
+    lcd->print("Mat: " + mat + "        ");
     lcd->setCursor(0,1);
-    lcd->print("Res: " + res);
+    lcd->print("Res: " + res + "        ");
 }
 
 void Menu::printDirection(int direction){
-    lcd->clear();
+    lcd->setCursor(0,0);
     if(direction == 1) {
         lcd->print("Direction: ->");
     } else
@@ -88,23 +92,34 @@ void Menu::printDirection(int direction){
 }
 
 void Menu::printAuto(int rounds){
-    lcd->clear();
+    lcd->setCursor(0,0);
     String roundsStr = String(rounds);
-    lcd->print("Rounds: " + roundsStr);
+    lcd->print("Rounds: " + roundsStr + "        ");
 }
 
-void Menu::printRun(int speed, int counter, int direction){
-    lcd->clear();
-    String strSpeed = String(speed);
-    String strCount = String(counter);
-    lcd->print("Speed: " + strSpeed +"%");
-    lcd->setCursor(13,0);
-    if(direction)
-        lcd->print("->");
-    else
-        lcd->print("<-");
-    lcd->setCursor(0,1);
-    lcd->print("Winds: " + strCount);
+void Menu::printRun(int* speed, int* counter, int direction){
+    if (speed == NULL && counter == NULL){
+        lcd->clear();
+        lcd->print("Speed: 0%");
+        lcd->setCursor(13,0);
+        if(direction)
+            lcd->print("->");
+        else
+            lcd->print("<-");
+        lcd->setCursor(0,1);
+        lcd->print("Winds: 0");
+    } else {
+        if( speed != NULL) {
+            String strSpeed = String(*speed);
+            lcd->setCursor(7,0);
+            lcd->print(strSpeed + "% ");
+        }
+        if( counter != NULL){
+            String strCount = String(*counter);
+            lcd->setCursor(7,1);
+            lcd->print(strCount + "      ");
+        }
+    }
 }
 
 void Menu::printMenu() {
@@ -124,28 +139,28 @@ void Menu::printMenu() {
 void Menu::chooseOption() {
     switch(opt) {
         case 1: 
-            lcd->clear();
-            lcd->print("Free Roam");
+            lcd->setCursor(0,0);
+            lcd->print("Free Roam       ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
-            lcd->print(opt);
+            lcd->println(String(opt) + "               ");
             break;
         case 2:
-            lcd->clear();
-            lcd->print("Automatic Wind");
+            lcd->setCursor(0,0);
+            lcd->print("Automatic Wind  ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
-            lcd->print(opt);
+            lcd->println(String(opt) + "               ");
             break;
         case 3:
-            lcd->clear();
-            lcd->print("Calculate");
+            lcd->setCursor(0,0);
+            lcd->print("Calculate       ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
-            lcd->print(opt);
+            lcd->println(String(opt) + "               ");
             break;
         default:
-            lcd->clear();
-            lcd->print("Choose Option");
+            lcd->setCursor(0,0);
+            lcd->print("Choose Option   ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
-            lcd->print(opt);
+            lcd->println(String(opt) + "               ");
             break;
     }
 }

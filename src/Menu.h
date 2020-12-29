@@ -24,7 +24,8 @@ public:
 
     void printMenu();
     void setup();
-    void printRun(int speed, int counter, int direction);
+    void clear();
+    void printRun(int* speed, int* counter, int direction);
     void printDirection(int direction);
     void printAuto(int rounds);
     void printResistance(double res, int reset = 0, String text="Resistance");

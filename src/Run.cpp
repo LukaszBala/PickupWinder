@@ -76,8 +76,10 @@ void Run::targetResistance(){
     double perimeter = 0;
     double length = 0;
     int coils = 0;
+    menu->clear();
     menu->printResistance(0);
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
@@ -85,12 +87,14 @@ void Run::targetResistance(){
             if(encoderCounter > 99)
                 encoderCounter = 99;
             intPart = encoderCounter;
-            menu->printResistance(double(intPart), 1);
+            resistance = intPart;
+            menu->printResistance(resistance, 1);
             updateScreen = false;
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
@@ -104,7 +108,10 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == previousBtn){}
+    menu->clear();
+    menu->printMaterial(materials[0].name, sciNotation(materials[0].value));
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
@@ -118,31 +125,69 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    menu->printResistance(diameter, 0, "Wire Diameter");
-    while(digitalRead(BTN) == previousBtn){}
+    intPart = 0;
+    dotPart = 0;
+    menu->clear();
+    menu->printResistance(0, 0, "Wire Diameter");
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
-                encoderCounter = 1000;
-            if(encoderCounter > 1001)
                 encoderCounter = 0;
-            dotPart = encoderCounter;
-            diameter = double((double)dotPart/100);
+            if(encoderCounter > 99)
+                encoderCounter = 99;
+            intPart = encoderCounter;
+            diameter = intPart;
             menu->printResistance(diameter, 1, "Wire Diameter");
             updateScreen = false;
         }
     }
     encoderCounter = 0;
-    menu->printResistance(diameter, 0, "Coil Perimeter");
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
-                encoderCounter = 1000;
-            if(encoderCounter > 1001)
                 encoderCounter = 0;
+            if(encoderCounter > 99)
+                encoderCounter = 99;
             dotPart = encoderCounter;
-            perimeter = double((double)dotPart/100);
+            diameter = double((double)intPart + (double)dotPart/100);
+            menu->printResistance(diameter, 1, "Wire Diameter");
+            updateScreen = false;
+        }
+    }
+    intPart = 0;
+    dotPart = 0;
+    encoderCounter = 0;
+    menu->clear();
+    menu->printResistance(0, 0, "Coil Perimeter");
+    while(digitalRead(BTN) == 0){}
+    delay(100);
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 0;
+            if(encoderCounter > 99)
+                encoderCounter = 99;
+            intPart = encoderCounter;
+            perimeter = intPart;
+            menu->printResistance(perimeter, 1, "Coil Perimeter");
+            updateScreen = false;
+        }
+    }
+    encoderCounter = 0;
+    while(digitalRead(BTN) == 0){}
+    delay(100);
+    while(digitalRead(BTN) != 0){
+        if( updateScreen) {
+            if(encoderCounter < 0)
+                encoderCounter = 0;
+            if(encoderCounter > 99)
+                encoderCounter = 99;
+            dotPart = encoderCounter;
+            perimeter = double((double)intPart + (double)dotPart/100);
             menu->printResistance(perimeter, 1, "Coil Perimeter");
             updateScreen = false;
         }
@@ -150,29 +195,32 @@ void Run::targetResistance(){
 
     length = (resistance*1000*PI*(diameter/100*diameter/100))/(4*materials[materialIndex].value);
     coils = length / perimeter;
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    menu->clear();
     menu->printCoils(coils, length/100);
     while(digitalRead(BTN) != 0){}
-
-    windCoils(coils, 60);
+    delay(100);
+    windCoils(coils);
 }
 
 void Run::autoStop(){
     int maxRounds = 0;
     encoderCounter = 0;
+    menu->clear();
     menu->printAuto(maxRounds);
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
-            maxRounds = encoderCounter;
+            maxRounds = encoderCounter * 10;
             menu->printAuto(maxRounds);
             updateScreen = false;
         }
     }
     menu->onBtnClick();
-    windCoils(maxRounds, 200);
+    windCoils(maxRounds);
 }
 
 void Run::setDirection(int direction){
@@ -188,8 +236,10 @@ void Run::setDirection(int direction){
 void Run::windCoils(int maxRounds, int speed) {
     int direction = 1;
     encoderCounter = 0;
+    menu->clear();
     menu->printDirection(direction);
-    while(digitalRead(BTN) == previousBtn){}
+    while(digitalRead(BTN) == 0){}
+    delay(100);
     while(digitalRead(BTN) != 0){
         if( updateScreen) {
             direction = !direction;
@@ -201,11 +251,14 @@ void Run::windCoils(int maxRounds, int speed) {
     encoderCounter = 0;
     menu->onBtnClick();
     detachInterrupt(digitalPinToInterrupt(CLK));
-    // long readTime;
-    // long lastReadTime = 0;
     int prevOut = 0;
     int oldSpeed = 0;
-    menu->printRun(map(speed, 100, 255, 0, 100), 0, direction);
+    menu->printRun(NULL, NULL, direction);
+    if(speed != 0) {
+        int spd = map(speed, 100, 255, 0, 100);
+        menu->printRun(&spd, NULL, direction);
+    }
+        
     while(maxRounds == -1 || counter < maxRounds)
         {
             if (digitalRead(DT) != prevOut)
@@ -224,39 +277,24 @@ void Run::windCoils(int maxRounds, int speed) {
                 }
             }
             prevOut = digitalRead(DT);
-            
-            // readTime = millis();
-            // if (readTime - lastReadTime > 5) {
-            //     if (digitalRead(DT) == HIGH)
-            //     {
-            //         if(speed < 255)
-            //             speed += 2;
-            //         if(speed > 255)
-            //             speed = 255;
-            //     }
-            //     else
-            //     {
-            //         if(speed > 100)
-            //             speed -= 2;
-            //     }
-            // }
-            // lastReadTime = readTime;
-
-
-            prevOut = digitalRead(DT);
-
             hall = digitalRead(hallPin);
 
-            // analogWrite(enA,speed);
             if (speed > 100) 
                 analogWrite(enA, speed);
             else
                 analogWrite(enA, 0);
             int speedTemp = map(speed, 100, 255, 0, 100);
-            if((oldSpeed != speedTemp) || (hall != oldHall && hall == 0)) {
-                if(hall != oldHall && hall == 0)
+
+            if(hall != oldHall && hall == 0){
                     counter++;
-                menu->printRun(speedTemp, counter, direction);
+                }
+
+            if((oldSpeed != speedTemp) && (hall != oldHall && hall == 0)) {
+                menu->printRun(&speedTemp, &counter, direction);
+            } else if(oldSpeed != speedTemp) {
+                menu->printRun(&speedTemp, NULL, direction);
+            } else if(hall != oldHall && hall == 0) {
+                menu->printRun(NULL, &counter, direction);
             }
             oldHall = hall;
             oldSpeed = speedTemp;
