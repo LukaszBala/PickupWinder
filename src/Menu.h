@@ -1,6 +1,5 @@
-#include <i2c/LiquidCrystal_I2C.h>
+#include "LiquidCrystal_I2C.h"
 #include <Arduino.h>
-#include <vector.h>
 
 class Menu
 {
@@ -8,7 +7,6 @@ private:
     LiquidCrystal_I2C *lcd;
     int opt;
     int choosenOpt;
-    Vector <int> choosen;
     void chooseOption();
 public:
     Menu();
