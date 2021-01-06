@@ -37,7 +37,6 @@ void Run::printMenu(){
     }
     btnPressed = digitalRead(BTN);
     if(btnPressed == 0 && btnPressed != previousBtn){
-        menu->onBtnClick();
         previousBtn = btnPressed;
         runOption();
         menu->printMenu();
@@ -219,7 +218,6 @@ void Run::autoStop(){
             updateScreen = false;
         }
     }
-    menu->onBtnClick();
     windCoils(maxRounds);
 }
 
@@ -249,7 +247,6 @@ void Run::windCoils(int maxRounds, int speed) {
     }
     setDirection(direction);
     encoderCounter = 0;
-    menu->onBtnClick();
     detachInterrupt(digitalPinToInterrupt(CLK));
     int prevOut = 0;
     int oldSpeed = 0;

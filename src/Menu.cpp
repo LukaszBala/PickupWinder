@@ -30,18 +30,8 @@ int Menu::getOpt()
     return opt;
 }
 
-int Menu::getLvl(){
-    return menuLvl;
-}
-
-void Menu::onBtnClick(){
-    choosen.push_back(opt);
-    menuLvl = choosen.size();
-}
-
 void Menu::setup() {
     opt = 0;
-    menuLvl = 0;
     lcd->begin();  
     lcd->backlight();
     lcd->setCursor(0,0);
@@ -100,7 +90,7 @@ void Menu::printAuto(int rounds){
 void Menu::printRun(int* speed, int* counter, int direction){
     if (speed == NULL && counter == NULL){
         lcd->clear();
-        lcd->print("Speed: 0%");
+        lcd->print("Power: 0%");
         lcd->setCursor(13,0);
         if(direction)
             lcd->print("->");
@@ -123,17 +113,7 @@ void Menu::printRun(int* speed, int* counter, int direction){
 }
 
 void Menu::printMenu() {
-    switch (menuLvl){
-        case 0:
-            chooseOption();
-            break;
-        case 1:
-            chooseOption();
-            break;
-        default:
-            chooseOption();
-            break;
-    }
+    chooseOption();
 }
 
 void Menu::chooseOption() {
@@ -147,19 +127,19 @@ void Menu::chooseOption() {
         case 2:
             lcd->setCursor(0,0);
             lcd->print("Automatic Wind  ");
-            lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
+            lcd->setCursor(0,1);
             lcd->println(String(opt) + "               ");
             break;
         case 3:
             lcd->setCursor(0,0);
             lcd->print("Calculate       ");
-            lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
+            lcd->setCursor(0,1);
             lcd->println(String(opt) + "               ");
             break;
         default:
             lcd->setCursor(0,0);
             lcd->print("Choose Option   ");
-            lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
+            lcd->setCursor(0,1);
             lcd->println(String(opt) + "               ");
             break;
     }

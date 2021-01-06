@@ -7,7 +7,6 @@ class Menu
 private:
     LiquidCrystal_I2C *lcd;
     int opt;
-    int menuLvl;
     int choosenOpt;
     Vector <int> choosen;
     void chooseOption();
@@ -18,9 +17,6 @@ public:
 
     void setOpt(int value);
     int getOpt();
-    int getLvl();
-
-    void onBtnClick();
 
     void printMenu();
     void setup();
