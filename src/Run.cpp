@@ -3,7 +3,7 @@
 
 Run *pointerToClass; 
 bool updateScreen = false;
-int encoderCounter = 0;
+volatile int encoderCounter = 0;
 
 static void outsideInterruptHandler(void) { 
   pointerToClass->interruptLaunch();
@@ -199,12 +199,12 @@ void Run::targetResistance(){
     menu->printCoils(coils, length/100);
     while(digitalRead(BTN) != 0){}
     delay(100);
-    windCoils(coils);
+    autoStop(coils, 1);
 }
 
-void Run::autoStop(){
-    int maxRounds = 0;
-    encoderCounter = 0;
+void Run::autoStop(int rounds, int multiplier){
+    int maxRounds = rounds;
+    encoderCounter = rounds;
     menu->clear();
     menu->printAuto(maxRounds);
     while(digitalRead(BTN) == 0){}
@@ -213,7 +213,7 @@ void Run::autoStop(){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
-            maxRounds = encoderCounter * 10;
+            maxRounds = encoderCounter * multiplier;
             menu->printAuto(maxRounds);
             updateScreen = false;
         }
@@ -256,21 +256,21 @@ void Run::windCoils(int maxRounds, int speed) {
         menu->printRun(&spd, NULL, direction);
     }
         
-    while(maxRounds == -1 || counter < maxRounds)
+    while(maxRounds == -1 || counter < maxRounds || counter < MAX_ROUNDS)
         {
             if (digitalRead(DT) != prevOut)
             {
                 if (digitalRead(CLK) != prevOut)
                 {
                      if(speed < 255)
-                        speed += 2;
+                        speed++;
                     if(speed > 255)
                         speed = 255;
                 }
                 else
                 {
                     if(speed > 100)
-                        speed -= 2;
+                        speed--;
                 }
             }
             prevOut = digitalRead(DT);

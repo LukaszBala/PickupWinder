@@ -120,7 +120,7 @@ void Menu::chooseOption() {
     switch(opt) {
         case 1: 
             lcd->setCursor(0,0);
-            lcd->print("Free Roam       ");
+            lcd->print("Free Wind       ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
             lcd->println(String(opt) + "               ");
             break;
