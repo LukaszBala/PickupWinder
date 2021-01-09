@@ -1,12 +1,26 @@
 #include "Run.h"
 
-
-Run *pointerToClass; 
 bool updateScreen = false;
 volatile int encoderCounter = 0;
 
-static void outsideInterruptHandler(void) { 
-  pointerToClass->interruptLaunch();
+static void interruptLaunch(){
+  static unsigned long lastInterruptTime = 0;
+  unsigned long interruptTime = millis();
+
+  if(digitalRead(BTN) != LOW){
+    if (interruptTime - lastInterruptTime > 5) {
+        if (digitalRead(DT) == LOW)
+        {
+        encoderCounter-- ;
+        }
+        else {
+        encoderCounter++ ;
+        }
+        if (!updateScreen)
+        updateScreen = true;
+    }
+  }
+  lastInterruptTime = interruptTime;
 }
 
 Run::Run(){
@@ -15,8 +29,7 @@ Run::Run(){
     menu = new Menu();
     btnPressed = 0;
     previousBtn = 0;
-    pointerToClass = this;
-    attachInterrupt(digitalPinToInterrupt(CLK), outsideInterruptHandler, LOW);
+    attachInterrupt(digitalPinToInterrupt(CLK), interruptLaunch, LOW);
     materials = new Material[6] {
         Material("Copper", 1.68E-8),
         Material("Silver", 1.59E-8),
@@ -36,7 +49,7 @@ void Run::printMenu(){
         updateScreen = false;
     }
     btnPressed = digitalRead(BTN);
-    if(btnPressed == 0 && btnPressed != previousBtn){
+    if(btnPressed == LOW && btnPressed != previousBtn){
         previousBtn = btnPressed;
         runOption();
         menu->printMenu();
@@ -77,9 +90,9 @@ void Run::targetResistance(){
     int coils = 0;
     menu->clear();
     menu->printResistance(0);
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -92,9 +105,9 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -109,9 +122,9 @@ void Run::targetResistance(){
     encoderCounter = 0;
     menu->clear();
     menu->printMaterial(materials[0].name, sciNotation(materials[0].value));
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -128,9 +141,9 @@ void Run::targetResistance(){
     dotPart = 0;
     menu->clear();
     menu->printResistance(0, 0, "Wire Diameter");
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -143,9 +156,9 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -162,9 +175,9 @@ void Run::targetResistance(){
     encoderCounter = 0;
     menu->clear();
     menu->printResistance(0, 0, "Coil Perimeter");
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -177,9 +190,9 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -194,10 +207,10 @@ void Run::targetResistance(){
 
     length = (resistance*1000*PI*(diameter/100*diameter/100))/(4*materials[materialIndex].value);
     coils = length / perimeter;
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     menu->clear();
     menu->printCoils(coils, length/100);
-    while(digitalRead(BTN) != 0){}
+    while(digitalRead(BTN) != LOW){}
     delay(100);
     autoStop(coils, 1);
 }
@@ -207,9 +220,9 @@ void Run::autoStop(int rounds, int multiplier){
     encoderCounter = rounds;
     menu->clear();
     menu->printAuto(maxRounds);
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -236,9 +249,9 @@ void Run::windCoils(int maxRounds, int speed) {
     encoderCounter = 0;
     menu->clear();
     menu->printDirection(direction);
-    while(digitalRead(BTN) == 0){}
+    while(digitalRead(BTN) == LOW){}
     delay(100);
-    while(digitalRead(BTN) != 0){
+    while(digitalRead(BTN) != LOW){
         if( updateScreen) {
             direction = !direction;
             menu->printDirection(direction);
@@ -255,8 +268,9 @@ void Run::windCoils(int maxRounds, int speed) {
         int spd = map(speed, 100, 255, 0, 100);
         menu->printRun(&spd, NULL, direction);
     }
-        
-    while(maxRounds == -1 || counter < maxRounds || counter < MAX_ROUNDS)
+
+    bool exited = false;
+    while((maxRounds == -1 || counter < maxRounds) && counter < MAX_ROUNDS)
         {
             if (digitalRead(DT) != prevOut)
             {
@@ -282,24 +296,26 @@ void Run::windCoils(int maxRounds, int speed) {
                 analogWrite(enA, 0);
             int speedTemp = map(speed, 100, 255, 0, 100);
 
-            if(hall != oldHall && hall == 0){
+            if(hall != oldHall && hall == LOW){
                     counter++;
                 }
 
-            if((oldSpeed != speedTemp) && (hall != oldHall && hall == 0)) {
+            if((oldSpeed != speedTemp) && (hall != oldHall && hall == LOW)) {
                 menu->printRun(&speedTemp, &counter, direction);
             } else if(oldSpeed != speedTemp) {
                 menu->printRun(&speedTemp, NULL, direction);
-            } else if(hall != oldHall && hall == 0) {
+            } else if(hall != oldHall && hall == LOW) {
                 menu->printRun(NULL, &counter, direction);
             }
             oldHall = hall;
             oldSpeed = speedTemp;
 
-            if(digitalRead(BTN) == 0 ){
+            if(digitalRead(BTN) == LOW ){
                 if(buttonPressed > 0){
-                    if(millis() - buttonPressed > 1000)
-                    break;
+                    if(millis() - buttonPressed > 1000) {
+                        exited = true;
+                        break;
+                    }
                 }
             } else {
                 buttonPressed = millis();
@@ -310,7 +326,11 @@ void Run::windCoils(int maxRounds, int speed) {
         speed = 0;
         maxRounds = 0;
         analogWrite(enA,0);
-        attachInterrupt(digitalPinToInterrupt(CLK), outsideInterruptHandler, LOW);
+        if(exited) {
+            while (digitalRead(BTN) == LOW) {}
+        }
+        attachInterrupt(digitalPinToInterrupt(CLK), interruptLaunch, LOW);
+        while(digitalRead(BTN) == HIGH){}
 }
 
 String Run::sciNotation(double num){
@@ -324,24 +344,4 @@ String Run::sciNotation(double num){
     res.concat("E-");
     res.concat(zeros);
     return res;
-}
-
-void Run::interruptLaunch(){
-  static unsigned long lastInterruptTime = 0;
-  unsigned long interruptTime = millis();
-
-  if(digitalRead(BTN) != 0){
-    if (interruptTime - lastInterruptTime > 5) {
-        if (digitalRead(DT) == LOW)
-        {
-        encoderCounter-- ;
-        }
-        else {
-        encoderCounter++ ;
-        }
-        if (!updateScreen)
-        updateScreen = true;
-    }
-  }
-  lastInterruptTime = interruptTime;
 }

@@ -10,7 +10,7 @@ void initWinder();
 void(* resetFunc) (void) = 0;
 
 void setup() {
-  TCCR1B = TCCR1B & B11111000 | B00000001;
+  TCCR1B = (TCCR1B & B11111000) | B00000001;
   pinMode(enA, OUTPUT);
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
@@ -37,6 +37,7 @@ void loop() {
 void initWinder(){
   digitalWrite(in1, LOW);
   digitalWrite(in2, LOW);
+  analogWrite(enA,LOW);
 
   for( int i = 0; i < 3; i++){
     digitalWrite(greenLed, HIGH);
@@ -56,7 +57,7 @@ void initWinder(){
 
   runner = new Run();
 
-  attachInterrupt(digitalPinToInterrupt(backBtn), resetFunc, HIGH);
+  attachInterrupt(digitalPinToInterrupt(backBtn), resetFunc, RISING);
 
   digitalWrite(greenLed, HIGH);
   digitalWrite(redLed, HIGH);

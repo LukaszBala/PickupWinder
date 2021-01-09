@@ -11,7 +11,6 @@ class Run {
         void windCoils(int maxRounds = -1, int speed = 100);
         void autoStop(int rounds = 0, int multiplier = 10);
         void targetResistance();
-        void interruptLaunch();
         void runOption();
     private: 
         void setDirection(int direction);
