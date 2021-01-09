@@ -210,15 +210,13 @@ void Run::targetResistance(){
     while(digitalRead(BTN) == LOW){}
     menu->clear();
     menu->printCoils(coils, length/100);
-    while(digitalRead(BTN) != LOW){}
-    delay(100);
     autoStop(coils, 1);
 }
 
 void Run::autoStop(int rounds, int multiplier){
     int maxRounds = rounds;
     encoderCounter = rounds;
-    menu->clear();
+    // menu->clear();
     menu->printAuto(maxRounds);
     while(digitalRead(BTN) == LOW){}
     delay(100);

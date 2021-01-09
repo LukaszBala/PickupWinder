@@ -47,9 +47,9 @@ void Menu::printResistance(double res, int reset, String text){
     }
     lcd->setCursor(0,1);
     if(res < 10)
-        lcd->print("       " + String(res) + " ");
+        lcd->print("      " + String(res) + "K ");
     else
-        lcd->print("      " + String(res) + " ");
+        lcd->print("     " + String(res) + "K ");
 }
 
 void Menu::clear(){
@@ -60,7 +60,7 @@ void Menu::printCoils(int coils, double length){
     lcd->setCursor(0,0);
     lcd->print("Length: " + String(length) + "m         ");
     lcd->setCursor(0,1);
-    lcd->print("Coils: " + String(coils) + "      ");
+    lcd->print("Turns: " + String(coils) + "      ");
 }
 
 void Menu::printMaterial(String mat, String res){
@@ -82,9 +82,9 @@ void Menu::printDirection(int direction){
 }
 
 void Menu::printAuto(int rounds){
-    lcd->setCursor(0,0);
+    lcd->setCursor(0,1);
     String roundsStr = String(rounds);
-    lcd->print("Rounds: " + roundsStr + "        ");
+    lcd->print("Turns: " + roundsStr + "        ");
 }
 
 void Menu::printRun(int* speed, int* counter, int direction){
@@ -97,7 +97,7 @@ void Menu::printRun(int* speed, int* counter, int direction){
         else
             lcd->print("<-");
         lcd->setCursor(0,1);
-        lcd->print("Winds: 0");
+        lcd->print("Turns: 0");
     } else {
         if( speed != NULL) {
             String strSpeed = String(*speed);
@@ -120,13 +120,13 @@ void Menu::chooseOption() {
     switch(opt) {
         case 1: 
             lcd->setCursor(0,0);
-            lcd->print("Free Wind       ");
+            lcd->print("Free Winding    ");
             lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
             lcd->println(String(opt) + "               ");
             break;
         case 2:
             lcd->setCursor(0,0);
-            lcd->print("Automatic Wind  ");
+            lcd->print("Auto Winding    ");
             lcd->setCursor(0,1);
             lcd->println(String(opt) + "               ");
             break;
