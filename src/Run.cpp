@@ -1,7 +1,8 @@
 #include "Run.h"
 
-bool updateScreen = false;
+volatile bool updateScreen = false;
 volatile int encoderCounter = 0;
+volatile bool intBtnPressed = false;
 
 static void interruptLaunch(){
   static unsigned long lastInterruptTime = 0;
@@ -23,6 +24,10 @@ static void interruptLaunch(){
   lastInterruptTime = interruptTime;
 }
 
+static void interruptBtn() {
+    intBtnPressed = true;
+}
+
 Run::Run(){
     counter = 0;
     buttonPressed = 0;
@@ -30,6 +35,7 @@ Run::Run(){
     btnPressed = 0;
     previousBtn = 0;
     attachInterrupt(digitalPinToInterrupt(CLK), interruptLaunch, LOW);
+    attachInterrupt(digitalPinToInterrupt(BTN), interruptBtn, FALLING);
     materials = new Material[6] {
         Material("Copper", 1.68E-8),
         Material("Silver", 1.59E-8),
@@ -48,14 +54,12 @@ void Run::printMenu(){
         menu->printMenu();
         updateScreen = false;
     }
-    btnPressed = digitalRead(BTN);
-    if(btnPressed == LOW && btnPressed != previousBtn){
-        previousBtn = btnPressed;
+    if(intBtnPressed){
+        intBtnPressed = false;
         runOption();
         menu->printMenu();
         updateScreen = false;
     }
-    previousBtn = btnPressed;
 }
 
 void Run::runOption(){
@@ -216,7 +220,6 @@ void Run::targetResistance(){
 void Run::autoStop(int rounds, int multiplier){
     int maxRounds = rounds;
     encoderCounter = rounds;
-    // menu->clear();
     menu->printAuto(maxRounds);
     while(digitalRead(BTN) == LOW){}
     delay(100);
@@ -247,9 +250,7 @@ void Run::windCoils(int maxRounds, int speed) {
     encoderCounter = 0;
     menu->clear();
     menu->printDirection(direction);
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    while(!intBtnPressed){
         if( updateScreen) {
             direction = !direction;
             menu->printDirection(direction);
@@ -259,6 +260,8 @@ void Run::windCoils(int maxRounds, int speed) {
     setDirection(direction);
     encoderCounter = 0;
     detachInterrupt(digitalPinToInterrupt(CLK));
+    detachInterrupt(digitalPinToInterrupt(BTN));
+    intBtnPressed = false;
     int prevOut = 0;
     int oldSpeed = 0;
     menu->printRun(NULL, NULL, direction);
@@ -326,9 +329,12 @@ void Run::windCoils(int maxRounds, int speed) {
         analogWrite(enA,0);
         if(exited) {
             while (digitalRead(BTN) == LOW) {}
+            delay(100);
         }
         attachInterrupt(digitalPinToInterrupt(CLK), interruptLaunch, LOW);
-        while(digitalRead(BTN) == HIGH){}
+        attachInterrupt(digitalPinToInterrupt(BTN), interruptBtn, FALLING);
+        while (digitalRead(BTN) != LOW) {}
+        intBtnPressed = false;
 }
 
 String Run::sciNotation(double num){

@@ -7,7 +7,6 @@ Run* runner;
 
 void isr();
 void initWinder();
-void(* resetFunc) (void) = 0;
 
 void setup() {
   TCCR1B = (TCCR1B & B11111000) | B00000001;
@@ -23,7 +22,6 @@ void setup() {
 
   pinMode(greenLed, OUTPUT);
   pinMode(redLed, OUTPUT);
-  pinMode(backBtn, INPUT);
 
   initWinder();
 }
@@ -56,8 +54,6 @@ void initWinder(){
   }
 
   runner = new Run();
-
-  attachInterrupt(digitalPinToInterrupt(backBtn), resetFunc, RISING);
 
   digitalWrite(greenLed, HIGH);
   digitalWrite(redLed, HIGH);

@@ -46,14 +46,24 @@ void Menu::printResistance(double res, int reset, String text){
         lcd->print(text + ":          ");
     }
     lcd->setCursor(0,1);
-    if(res < 10)
-        lcd->print("      " + String(res) + "K ");
-    else
-        lcd->print("     " + String(res) + "K ");
+    if(text.equals("Resistance")){
+        if(res < 10)
+            lcd->print("      " + String(res) + "K ");
+        else
+            lcd->print("     " + String(res) + "K ");
+    } else {
+        if(res < 10)
+            lcd->print("      " + String(res) + "  ");
+        else
+            lcd->print("     " + String(res) + "  ");
+    }
 }
 
 void Menu::clear(){
-    lcd->clear();
+    lcd->setCursor(0,0);
+    lcd->print("                ");
+    lcd->setCursor(0,1);
+    lcd->print("                ");
 }
 
 void Menu::printCoils(int coils, double length){
@@ -120,27 +130,27 @@ void Menu::chooseOption() {
     switch(opt) {
         case 1: 
             lcd->setCursor(0,0);
-            lcd->print("Free Winding    ");
-            lcd->setCursor(0,1); //Ustawienie kursora w pozycji 0,0 (drugi wiersz, pierwsza kolumna)
-            lcd->println(String(opt) + "               ");
+            lcd->print(String(opt) + ".Free Winding ");
+            lcd->setCursor(0,1);
+            lcd->print("                ");
             break;
         case 2:
             lcd->setCursor(0,0);
-            lcd->print("Auto Winding    ");
+            lcd->print(String(opt) + ".Auto Winding ");
             lcd->setCursor(0,1);
-            lcd->println(String(opt) + "               ");
+            lcd->print("                ");
             break;
         case 3:
             lcd->setCursor(0,0);
-            lcd->print("Calculate       ");
+            lcd->print(String(opt) + ".Calculate    ");
             lcd->setCursor(0,1);
-            lcd->println(String(opt) + "               ");
+            lcd->print("                ");
             break;
         default:
             lcd->setCursor(0,0);
-            lcd->print("Choose Option   ");
+            lcd->print(String(opt) + ".Choose Option");
             lcd->setCursor(0,1);
-            lcd->println(String(opt) + "               ");
+            lcd->print("                ");
             break;
     }
 }

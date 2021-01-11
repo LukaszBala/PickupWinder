@@ -1,8 +1,6 @@
-#define backBtn 2
-
 #define CLK 3
 #define DT 4
-#define BTN 5
+#define BTN 2
 
 #define enA 10
 #define in1 7
