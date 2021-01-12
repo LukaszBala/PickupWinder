@@ -55,7 +55,6 @@ void Run::printMenu(){
         updateScreen = false;
     }
     if(intBtnPressed){
-        intBtnPressed = false;
         runOption();
         menu->printMenu();
         updateScreen = false;
@@ -94,9 +93,8 @@ void Run::targetResistance(){
     int coils = 0;
     menu->clear();
     menu->printResistance(0);
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -109,9 +107,8 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -126,9 +123,8 @@ void Run::targetResistance(){
     encoderCounter = 0;
     menu->clear();
     menu->printMaterial(materials[0].name, sciNotation(materials[0].value));
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -145,9 +141,8 @@ void Run::targetResistance(){
     dotPart = 0;
     menu->clear();
     menu->printResistance(0, 0, "Wire Diameter");
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -160,9 +155,8 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -179,9 +173,8 @@ void Run::targetResistance(){
     encoderCounter = 0;
     menu->clear();
     menu->printResistance(0, 0, "Coil Perimeter");
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -194,9 +187,8 @@ void Run::targetResistance(){
         }
     }
     encoderCounter = 0;
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -221,9 +213,8 @@ void Run::autoStop(int rounds, int multiplier){
     int maxRounds = rounds;
     encoderCounter = rounds;
     menu->printAuto(maxRounds);
-    while(digitalRead(BTN) == LOW){}
-    delay(100);
-    while(digitalRead(BTN) != LOW){
+    intBtnPressed = false;
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -250,6 +241,7 @@ void Run::windCoils(int maxRounds, int speed) {
     encoderCounter = 0;
     menu->clear();
     menu->printDirection(direction);
+    intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
             direction = !direction;
