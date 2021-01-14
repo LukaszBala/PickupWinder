@@ -8,8 +8,8 @@ static void interruptLaunch(){
   static unsigned long lastInterruptTime = 0;
   unsigned long interruptTime = millis();
 
-  if(digitalRead(BTN) != LOW){
-    if (interruptTime - lastInterruptTime > 5) {
+  if(interruptTime - lastInterruptTime > 10){
+    if (digitalRead(BTN) != LOW) {
         if (digitalRead(DT) == LOW)
         {
         encoderCounter-- ;
@@ -25,7 +25,13 @@ static void interruptLaunch(){
 }
 
 static void interruptBtn() {
-    intBtnPressed = true;
+    static unsigned long lastInterruptTimeBtn = 0;
+    unsigned long interruptTimeBtn = millis();
+
+    if (!intBtnPressed && (interruptTimeBtn - lastInterruptTimeBtn) > 300) {
+        intBtnPressed = true;
+    }
+    lastInterruptTimeBtn = interruptTimeBtn;
 }
 
 Run::Run(){
@@ -52,12 +58,14 @@ void Run::printMenu(){
         menu->setOpt(encoderCounter);
         encoderCounter = menu->getOpt();
         menu->printMenu();
+        encoderCounter = menu->getOpt();
         updateScreen = false;
     }
     if(intBtnPressed){
         runOption();
         menu->printMenu();
         updateScreen = false;
+        intBtnPressed = false;
     }
 }
 
@@ -188,7 +196,7 @@ void Run::targetResistance(){
     }
     encoderCounter = 0;
     intBtnPressed = false;
-    while(intBtnPressed){
+    while(!intBtnPressed){
         if( updateScreen) {
             if(encoderCounter < 0)
                 encoderCounter = 0;
@@ -314,11 +322,17 @@ void Run::windCoils(int maxRounds, int speed) {
                 buttonPressed = millis();
             }
         }
+        digitalWrite(in1, HIGH);
+        digitalWrite(in2, HIGH);
+        analogWrite(enA,255);
+        delay(300);
+        digitalWrite(in1, LOW);
+        digitalWrite(in2, LOW);
+        analogWrite(enA,0);
         buttonPressed = 0;
         counter = 0;
         speed = 0;
-        maxRounds = 0;
-        analogWrite(enA,0);
+        maxRounds = 0; 
         if(exited) {
             while (digitalRead(BTN) == LOW) {}
             delay(100);
