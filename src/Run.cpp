@@ -9,7 +9,6 @@ static void interruptLaunch(){
   unsigned long interruptTime = millis();
 
   if(interruptTime - lastInterruptTime > 10){
-    if (digitalRead(BTN) != LOW) {
         if (digitalRead(DT) == LOW)
         {
         encoderCounter-- ;
@@ -17,10 +16,8 @@ static void interruptLaunch(){
         else {
         encoderCounter++ ;
         }
-        if (!updateScreen)
         updateScreen = true;
     }
-  }
   lastInterruptTime = interruptTime;
 }
 
@@ -28,7 +25,7 @@ static void interruptBtn() {
     static unsigned long lastInterruptTimeBtn = 0;
     unsigned long interruptTimeBtn = millis();
 
-    if (!intBtnPressed && (interruptTimeBtn - lastInterruptTimeBtn) > 300) {
+    if ((interruptTimeBtn - lastInterruptTimeBtn) > 300) {
         intBtnPressed = true;
     }
     lastInterruptTimeBtn = interruptTimeBtn;
@@ -55,17 +52,25 @@ Run::Run(){
 void Run::printMenu(){
     if(updateScreen)
     {
+        cli();
         menu->setOpt(encoderCounter);
         encoderCounter = menu->getOpt();
+        sei();
         menu->printMenu();
+        cli();
         encoderCounter = menu->getOpt();
         updateScreen = false;
+        sei();
     }
     if(intBtnPressed){
         runOption();
         menu->printMenu();
-        updateScreen = false;
+        cli();
+        updateScreen = true;
         intBtnPressed = false;
+        encoderCounter = 0;
+        menu->setOpt(encoderCounter);
+        sei();
     }
 }
 
@@ -84,8 +89,6 @@ void Run::runOption(){
     default:
         break;
     }
-    encoderCounter = 0;
-    menu->setOpt(encoderCounter);
 }
 
 void Run::targetResistance(){
@@ -104,11 +107,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             intPart = encoderCounter;
+            sei();
             resistance = intPart;
             menu->printResistance(resistance, 1);
             updateScreen = false;
@@ -118,11 +123,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             dotPart = encoderCounter;
+            sei();
             resistance = double((double)intPart + (double)dotPart/100);
             menu->printResistance(resistance, 1);
             updateScreen = false;
@@ -134,11 +141,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > materialSize)
                 encoderCounter = 0;
             materialIndex = encoderCounter;
+            sei();
             String materialResistance = sciNotation(materials[materialIndex].value);
             menu->printMaterial(materials[materialIndex].name, materialResistance);
             updateScreen = false;
@@ -152,11 +161,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             intPart = encoderCounter;
+            sei();
             diameter = intPart;
             menu->printResistance(diameter, 1, "Wire Diameter");
             updateScreen = false;
@@ -166,11 +177,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             dotPart = encoderCounter;
+            sei();
             diameter = double((double)intPart + (double)dotPart/100);
             menu->printResistance(diameter, 1, "Wire Diameter");
             updateScreen = false;
@@ -184,11 +197,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             intPart = encoderCounter;
+            sei();
             perimeter = intPart;
             menu->printResistance(perimeter, 1, "Coil Perimeter");
             updateScreen = false;
@@ -198,11 +213,13 @@ void Run::targetResistance(){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
             if(encoderCounter > 99)
                 encoderCounter = 99;
             dotPart = encoderCounter;
+            sei();
             perimeter = double((double)intPart + (double)dotPart/100);
             menu->printResistance(perimeter, 1, "Coil Perimeter");
             updateScreen = false;
@@ -224,8 +241,10 @@ void Run::autoStop(int rounds, int multiplier){
     intBtnPressed = false;
     while(!intBtnPressed){
         if( updateScreen) {
+            cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
+            sei();
             maxRounds = encoderCounter * multiplier;
             menu->printAuto(maxRounds);
             updateScreen = false;
