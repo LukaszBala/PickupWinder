@@ -11,6 +11,6 @@
 #define greenLed 11
 #define redLed 12
 
-#define MAX_ROUNDS 100000
+#define MAX_ROUNDS 50000
 
 

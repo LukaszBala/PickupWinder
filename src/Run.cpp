@@ -244,8 +244,10 @@ void Run::autoStop(int rounds, int multiplier){
             cli();
             if(encoderCounter < 0)
                 encoderCounter = 0;
-            sei();
+            if(encoderCounter > MAX_ROUNDS/10)
+            encoderCounter = MAX_ROUNDS/10;
             maxRounds = encoderCounter * multiplier;
+            sei();
             menu->printAuto(maxRounds);
             updateScreen = false;
         }
@@ -341,13 +343,11 @@ void Run::windCoils(int maxRounds, int speed) {
                 buttonPressed = millis();
             }
         }
-        digitalWrite(in1, HIGH);
-        digitalWrite(in2, HIGH);
-        analogWrite(enA,255);
-        delay(300);
         digitalWrite(in1, LOW);
         digitalWrite(in2, LOW);
-        analogWrite(enA,0);
+        analogWrite(enA, 255);
+        delay(300);
+        analogWrite(enA, 0);
         buttonPressed = 0;
         counter = 0;
         speed = 0;
