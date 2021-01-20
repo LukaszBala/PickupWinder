@@ -32,11 +32,7 @@ static void interruptBtn() {
 }
 
 Run::Run(){
-    counter = 0;
-    buttonPressed = 0;
     menu = new Menu();
-    btnPressed = 0;
-    previousBtn = 0;
     attachInterrupt(digitalPinToInterrupt(CLK), interruptLaunch, LOW);
     attachInterrupt(digitalPinToInterrupt(BTN), interruptBtn, FALLING);
     materials = new Material[6] {
@@ -225,13 +221,15 @@ void Run::targetResistance(){
             updateScreen = false;
         }
     }
-
+    intBtnPressed = false;
     length = (resistance*1000*PI*(diameter/100*diameter/100))/(4*materials[materialIndex].value);
-    coils = length / perimeter;
-    while(digitalRead(BTN) == LOW){}
+    coils = (length / perimeter > MAX_ROUNDS || length / perimeter < 0) ? -1 : length / perimeter;
     menu->clear();
     menu->printCoils(coils, length/100);
-    autoStop(coils, 1);
+    if ( coils <= MAX_ROUNDS && length/100 < 10000000 && coils >= 0 && length/100 >= 0)
+        autoStop(coils, 1);
+    else 
+        while(!intBtnPressed) {}
 }
 
 void Run::autoStop(int rounds, int multiplier){
@@ -291,6 +289,10 @@ void Run::windCoils(int maxRounds, int speed) {
         menu->printRun(&spd, NULL, direction);
     }
 
+    int counter = 0;
+    int hall;
+    int oldHall = -1;
+    unsigned long buttonPressed = 0;
     bool exited = false;
     while((maxRounds == -1 || counter < maxRounds) && counter < MAX_ROUNDS)
         {

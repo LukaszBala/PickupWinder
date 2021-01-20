@@ -51,11 +51,16 @@ void Menu::printResistance(double res, int reset, String text){
             lcd->print("      " + String(res) + "K ");
         else
             lcd->print("     " + String(res) + "K ");
+    } else if (text.equals("Coil Perimeter")) {
+        if(res < 10)
+            lcd->print("      " + String(res) + "cm ");
+        else
+            lcd->print("     " + String(res) + "cm ");
     } else {
         if(res < 10)
-            lcd->print("      " + String(res) + "  ");
+            lcd->print("      " + String(res) + "mm ");
         else
-            lcd->print("     " + String(res) + "  ");
+            lcd->print("     " + String(res) + "mm ");
     }
 }
 
@@ -68,9 +73,20 @@ void Menu::clear(){
 
 void Menu::printCoils(int coils, double length){
     lcd->setCursor(0,0);
-    lcd->print("Length: " + String(length) + "m         ");
+    if( length < 10000 && length >= 0)
+        lcd->print("Length: " + String(length) + "m         ");
+    else if (length < 10000000 && length >= 0) {
+        lcd->print("Length: " + String(length, 0) + "m         ");
+    } else {
+        lcd->print("Length: Too Much ");
+    }
     lcd->setCursor(0,1);
-    lcd->print("Turns: " + String(coils) + "      ");
+    if (coils < 0)
+        lcd->print("Turns: Too Much  ");
+    else if (coils <= MAX_ROUNDS) 
+        lcd->print("Turns: " + String(coils) + "      ");
+    else
+        lcd->print("Turns: Too Much  ");
 }
 
 void Menu::printMaterial(String mat, String res){
@@ -123,32 +139,28 @@ void Menu::printRun(int* speed, int* counter, int direction){
 }
 
 void Menu::printMenu() {
-    chooseOption();
-}
-
-void Menu::chooseOption() {
     switch(opt) {
         case 1: 
             lcd->setCursor(0,0);
-            lcd->print(String(opt) + ".Free Winding ");
+            lcd->print(String(opt) + ".Free Winding  ");
             lcd->setCursor(0,1);
             lcd->print("                ");
             break;
         case 2:
             lcd->setCursor(0,0);
-            lcd->print(String(opt) + ".Auto Winding ");
+            lcd->print(String(opt) + ".Auto Winding  ");
             lcd->setCursor(0,1);
             lcd->print("                ");
             break;
         case 3:
             lcd->setCursor(0,0);
-            lcd->print(String(opt) + ".Calculate    ");
+            lcd->print(String(opt) + ".Calculate     ");
             lcd->setCursor(0,1);
             lcd->print("                ");
             break;
         default:
             lcd->setCursor(0,0);
-            lcd->print(String(opt) + ".Choose Option");
+            lcd->print(String(opt) + ".Choose Option ");
             lcd->setCursor(0,1);
             lcd->print("                ");
             break;

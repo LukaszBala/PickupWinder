@@ -16,11 +16,5 @@ class Run {
         void setDirection(int direction);
         String sciNotation(double num);
         Material *materials;
-        int counter;
-        int hall;
-        int oldHall;
-        unsigned long buttonPressed;
         Menu* menu;
-        int btnPressed;
-        int previousBtn;
 };

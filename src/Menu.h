@@ -1,13 +1,12 @@
 #include "LiquidCrystal_I2C.h"
 #include <Arduino.h>
+#include "Config.h"
 
 class Menu
 {
 private:
     LiquidCrystal_I2C *lcd;
     int opt;
-    int choosenOpt;
-    void chooseOption();
 public:
     Menu();
     Menu(LiquidCrystal_I2C* lcd);
